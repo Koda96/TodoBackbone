@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" 
+    integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="./static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo Trainer Bot</title>
+</head>
+<body>
+    <header>
+        <h1>Trainer Bot</h1>
+    </header>
+
+    <form>
+        <button id="voz" class="vozboton">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <input type="text" class="todo">
+        <input type="time" class="todo-clock" name="appt">
+        <button class="boton" type="submit">
+            <i class="fas fa-plus-circle"></i>
+        </button>
+        <div class="select">
+            <select name="todos" class="filter-todo">
+                <option value="all">Todas</option>
+                <option value="completed">Completadas</option>
+                <option value="uncompleted">No completadas</option>
+            </select>
+        </div>
+        <input type="checkbox" id="checkvoice">
+            <label for="checkvoice"> TTS</label><br>
+    </form>
+
+    <div class="tareas">
+        <ul class="todo-list"></ul>
+    </div>
+
+    <script src="./app.js"></script>
+    <script src="libraries/p5.js"></script>
+    <script src="libraries/p5.sound.js"></script>
+    <script src="libraries/p5.speech.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
+</body>
+</html>
