@@ -80,7 +80,7 @@ form button:hover{
     flex: 1;
 }
 
-.delete-button, .complete-button{
+.delete-button, .complete-button, .video-embed{
     background: #FF6F61;
     color: #FFFFFF;
     border: none;
@@ -94,6 +94,10 @@ form button:hover{
     align-items: center;
 }
 
+.video-embed{
+    background: #6bd4fd;
+}
+
 .complete-button {
     background: #62ff4d;
 }
@@ -102,7 +106,7 @@ form button:hover{
     padding: 0rem 0.5rem;
 }
 
-.fa-check-circle, .fa-minus-circle {
+.fa-check-circle, .fa-minus-circle,  .fa-youtube{
     pointer-events: none;
 }
 
@@ -150,4 +154,21 @@ select {
 
 .select:hover::after {
     color: #FF6F61;
+}
+
+.hide{
+    display:none;  
+}
+
+.frame-container {
+    position: relative;
+    display: none;
+}
+
+.iframe-button {
+    position: absolute;
+    top: -30px;
+    left: 0px;
+    background: #0F9D58;
+    color: white;
 }

@@ -5,17 +5,22 @@ const todoButton = document.querySelector('.boton');
 const micButton = document.querySelector('.vozboton');
 const todoList = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-todo');
+const botonrandom = document.querySelector('.botonrandom');
+const botoncerrar = document.querySelector('.iframe-button');
 const digits_only = string => [...string].every(c => '0123456789:'.includes(c));
 let lang = 'es-MX';
+var url;
 var toogle = 0;
 var check = 1;
 
 //LISTENERS
 document.addEventListener('DOMContentLoaded', getTodos);
+botonrandom.addEventListener('click', fetchurl);
 todoButton.addEventListener('click', addTodo);
 todoList.addEventListener("click", deleteCheck);
 filterOption.addEventListener('click', filterTodo);
 micButton.addEventListener('click', voicerecognition);
+botoncerrar.addEventListener('click', cerrarReproductor);
 document.addEventListener('click', startAudio);
 document.addEventListener('keydown', keyRecognition);
 
@@ -53,7 +58,7 @@ function addTodo(event){
 
     todoList.appendChild(todoDiv);
 
-    saveLocalTodos(todoInput.value, horario.value);
+    saveLocalTodos(todoInput.value, horario.value, "undefined");
 
     console.log(todoList);
 
@@ -67,6 +72,7 @@ function addTodo(event){
 
 function deleteCheck(event){
     const item = event.target;
+    //console.log(item.classList);
     if(item.classList[0] === 'delete-button'){
         const todo = item.parentElement;
         todo.classList.add("fall");
@@ -79,6 +85,13 @@ function deleteCheck(event){
     if(item.classList[0] == 'complete-button'){
         const todo = item.parentElement;
         todo.classList.toggle("completed")
+    }
+
+    if(item.classList[0] == 'video-embed'){
+        const todo = item.parentElement;
+        console.log(todo.querySelector('.hide').innerHTML);
+        document.getElementById("videoej").src = todo.querySelector('.hide').innerHTML;
+        document.getElementById("frame-container").style.display="block";
     }
 }
 
@@ -110,14 +123,14 @@ function filterTodo(event){
     });
 }
 
-function saveLocalTodos(todo, horario){ 
+function saveLocalTodos(todo, horario, url){ 
     let todos;
     if(localStorage.getItem('todos') === null){
         todos = [];
     }else{
         todos = JSON.parse(localStorage.getItem('todos'));
     }
-    todos.push(todo + "@@" + horario);
+    todos.push(todo + "@@" + horario + "##" + url);
     localStorage.setItem('todos', JSON.stringify(todos));
 }
 
@@ -125,6 +138,7 @@ function getTodos(){
     let todos;
     let text;
     let hora;
+    let url;
 
     if(localStorage.getItem('todos') === null){
         todos = [];
@@ -133,7 +147,8 @@ function getTodos(){
     }
     todos.forEach(function(todo){
         text = todo.slice(0, todo.indexOf("@"));
-        hora = todo.slice(todo.indexOf("@") + 2, todo.length);
+        hora = todo.slice(todo.indexOf("@") + 2, todo.indexOf('#'));
+        url = todo.slice(todo.indexOf("#") + 2, todo.length);        
 
         const todoDiv = document.createElement('div');
         todoDiv.classList.add("todo");
@@ -142,6 +157,14 @@ function getTodos(){
         newTodo.innerText = text;
         newTodo.classList.add("todo-item");
         todoDiv.appendChild(newTodo);
+
+        if (url != "undefined"){
+            const todourl = document.createElement('li');
+            todourl.innerText = url;
+            todourl.classList.add("hide");
+            todourl.setAttribute('id', 'url');
+            todoDiv.appendChild(todourl);
+        }
 
         const time = document.createElement('li');
         if(hora != "undefined")
@@ -157,7 +180,14 @@ function getTodos(){
         const deleteButton = document.createElement('button');
         deleteButton.innerHTML = '<i class="fas fa-minus-circle"></i>';
         deleteButton.classList.add("delete-button");
-        todoDiv.appendChild(deleteButton);
+        todoDiv.appendChild(deleteButton);   
+        
+        if (url != "undefined"){
+            const videoEmbed = document.createElement('button');
+            videoEmbed.innerHTML = '<i class="fab fa-youtube"></i>';
+            videoEmbed.classList.add("video-embed");
+            todoDiv.appendChild(videoEmbed);
+        }
 
         todoList.appendChild(todoDiv);
     });
@@ -229,7 +259,7 @@ function writeSpeech(text, hora){
     deleteButton.classList.add("delete-button");
     todoDiv.appendChild(deleteButton);
     todoList.appendChild(todoDiv);
-    saveLocalTodos(text, hora);
+    saveLocalTodos(text, hora, "undefined");
 
     console.log("Writing succesful");
 
@@ -304,4 +334,53 @@ function gotSpeech3(speechRec){
         if(check == 1)
             document.getElementById("checkvoice").checked = false;
     }
+}
+
+function fetchurl(event){
+    let tasks, x;
+    event.preventDefault();
+    var url = "http://localhost:3000/tasks";
+    $.getJSON(url, function (data){
+        //console.log(data);
+        x = Math.floor(Math.random() * Object.keys(data).length);
+
+        const todoDiv = document.createElement('div');
+        todoDiv.classList.add("todo");
+
+        const newTodo = document.createElement('li');
+        newTodo.innerText = data[x].description;
+        newTodo.classList.add("todo-item");
+        todoDiv.appendChild(newTodo);
+
+        const todourl = document.createElement('li');
+        todourl.innerText = data[x].url;
+        todourl.classList.add("hide");
+        todourl.setAttribute('id', 'url');
+        todoDiv.appendChild(todourl);
+
+        const completedButton = document.createElement('button');
+        completedButton.innerHTML = '<i class="fas fa-check-circle"></i>';
+        completedButton.classList.add("complete-button");
+        todoDiv.appendChild(completedButton)
+
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = '<i class="fas fa-minus-circle"></i>';
+        deleteButton.classList.add("delete-button");
+        todoDiv.appendChild(deleteButton);
+
+        const videoEmbed = document.createElement('button');
+        videoEmbed.innerHTML = '<i class="fab fa-youtube"></i>';
+        videoEmbed.classList.add("video-embed");
+        todoDiv.appendChild(videoEmbed);
+
+        todoList.appendChild(todoDiv);
+        saveLocalTodos(data[x].description, "undefined", data[x].url);
+
+        TTS(data[x].description, "undefined")
+    });
+}
+
+function cerrarReproductor(event){
+    event.preventDefault();
+    document.getElementById("frame-container").style.display="none";
 }
